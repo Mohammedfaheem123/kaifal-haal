@@ -26,7 +26,8 @@ Rules:
 - Preserve meaning, intent and register. Translate ideas, not words one by one.
 - Use everyday local spoken wording for ${DIALECTS[d].country}. Never fall back to Modern Standard Arabic. Do not treat Gulf dialects as identical. If you are not sure a form is distinctly local, use a widely understood Gulf form and say so in context_notes.
 - Tone: ${TONES[tone]}
-- arabic_translation: Arabic script only. No Latin letters, no transliteration, no pronunciation guide.
+- arabic_translation: Arabic script only. No Latin letters.
+- pronunciation: how to say your arabic_translation, written in plain English letters for English and Malayalam speakers (for example "Assalamu alaikum"). Use simple spelling with natural word breaks, no special symbols, and follow the pronunciation of the selected dialect.
 - meaning: a natural rendering of your Arabic translation in ${EXPLAIN[explain]}.
 - context_notes: one or two short practical sentences only when useful (regional wording, ambiguity, formality, gender of addressee). Use an empty string if nothing is needed. Never claim a phrase is universal or invent usage claims. If the input is ambiguous, say so and state which reading you chose.
 - detected_source_language: one of "English", "Malayalam", "Manglish".
@@ -36,22 +37,24 @@ const schema = {
   type: Type.OBJECT,
   properties: {
     arabic_translation: { type: Type.STRING },
+    pronunciation: { type: Type.STRING },
     meaning: { type: Type.STRING },
     context_notes: { type: Type.STRING },
     detected_source_language: { type: Type.STRING },
     target_dialect: { type: Type.STRING },
     tone: { type: Type.STRING },
   },
-  required: ["arabic_translation", "meaning", "context_notes", "detected_source_language", "target_dialect", "tone"],
+  required: ["arabic_translation", "pronunciation", "meaning", "context_notes", "detected_source_language", "target_dialect", "tone"],
 };
 
 function validateOutput(o) {
   if (!o || typeof o !== "object") return null;
   for (const k of Object.keys(schema.properties)) if (typeof o[k] !== "string") return null;
-  if (!o.arabic_translation.trim() || !o.meaning.trim()) return null;
+  if (!o.arabic_translation.trim() || !o.meaning.trim() || !o.pronunciation.trim()) return null;
   if (!/[\u0600-\u06FF]/.test(o.arabic_translation)) return null;
   return {
     arabic_translation: o.arabic_translation.trim(),
+    pronunciation: o.pronunciation.trim(),
     meaning: o.meaning.trim(),
     context_notes: o.context_notes.trim(),
     detected_source_language: o.detected_source_language.trim(),
@@ -71,6 +74,7 @@ function throttled(ip) {
 }
 
 const app = express();
+app.set("trust proxy", 1);
 app.use(express.json({ limit: "8kb" }));
 app.use(express.static("public"));
 
