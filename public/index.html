@@ -3,12 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>try{var t=localStorage.getItem("kh_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Kaifal Haal — Speak Their Language.</title>
 <meta name="description" content="Kaifal Haal is an AI-powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600&family=Noto+Sans+Malayalam:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#faf7f2;--card:#fff;--ink:#1d2b2a;--mute:#5d6b69;--line:#e6e0d5;--teal:#0f5e5a;--teal-d:#0a4744;--tint:#e5f1ef;--err:#a63a2b;--errbg:#fbeae6;--r:18px}
+:root{--bg:#faf7f2;--card:#fff;--ink:#1d2b2a;--mute:#5d6b69;--line:#e6e0d5;--teal:#0f5e5a;--teal-d:#0a4744;--tint:#e5f1ef;--err:#a63a2b;--errbg:#fbeae6;--r:18px;--btn:#0f5e5a;--btn-d:#0a4744;--nav:#efe9de;--note:#f6f1e6;--pill:#efe9de;--field:#fff;--aibg:#fdf0cf;--aifg:#6b4e00}
+:root[data-theme=dark]{--bg:#111b1a;--card:#1a2726;--ink:#e8efee;--mute:#9db0ad;--line:#2b3d3b;--teal:#6fd0c8;--teal-d:#a6e4de;--tint:#1e3532;--err:#f0a090;--errbg:#3a1f1a;--btn:#1f8a83;--btn-d:#2aa39b;--nav:#223130;--note:#243433;--pill:#243433;--field:#142120;--aibg:#4a3a10;--aifg:#f6d98a}
+.pron{font-size:18px;color:var(--teal);margin:2px 2px 6px}
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 Inter,"Noto Sans Malayalam",system-ui,sans-serif}
 .wrap{max-width:880px;margin:0 auto;padding:20px 16px 56px}
@@ -16,37 +20,37 @@ header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6
 h1{font:700 28px/1.1 "Bricolage Grotesque",sans-serif;margin:0;color:var(--teal)}
 .ar-brand{font:600 22px "Noto Naskh Arabic",serif;color:var(--teal-d)}
 .tag{color:var(--mute);margin:0 0 18px}
-nav{display:flex;gap:4px;background:#efe9de;padding:4px;border-radius:999px;margin-bottom:18px}
+nav{display:flex;gap:4px;background:var(--nav);padding:4px;border-radius:999px;margin-bottom:18px}
 nav button{flex:1;border:0;background:none;padding:10px 8px;border-radius:999px;font:500 15px Inter,sans-serif;color:var(--mute);cursor:pointer}
 nav button[aria-selected=true]{background:var(--card);color:var(--teal);box-shadow:0 1px 4px #0001}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px #1d2b2a0d}
 .grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
 @media(max-width:560px){.grid{grid-template-columns:1fr}}
 label.f{display:block;font-size:13px;color:var(--mute);margin-bottom:4px}
-select,textarea,input[type=search]{width:100%;border:1px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);font:inherit;padding:10px 12px}
+select,textarea,input[type=search]{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--field);color:var(--ink);font:inherit;padding:10px 12px}
 select:focus,textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
 textarea{min-height:140px;resize:vertical;font-size:18px;line-height:1.5}
 .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
 .sp{flex:1}.count{font-size:13px;color:var(--mute)}.count.over{color:var(--err);font-weight:600}
-button.p{background:var(--teal);color:#fff;border:0;border-radius:12px;padding:12px 22px;font:600 16px Inter,sans-serif;cursor:pointer}
-button.p:hover{background:var(--teal-d)}button.p:disabled{opacity:.55;cursor:not-allowed}
-button.s{background:#fff;color:var(--teal);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:500 14px Inter,sans-serif;cursor:pointer}
+button.p{background:var(--btn);color:#fff;border:0;border-radius:12px;padding:12px 22px;font:600 16px Inter,sans-serif;cursor:pointer}
+button.p:hover{background:var(--btn-d)}button.p:disabled{opacity:.55;cursor:not-allowed}
+button.s{background:var(--card);color:var(--teal);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:500 14px Inter,sans-serif;cursor:pointer}
 button.s:hover{background:var(--tint)}
 .opts{margin:12px 0 4px}
 .result{margin-top:16px}
 .ar{direction:rtl;text-align:right;font:600 30px/1.7 "Noto Naskh Arabic",serif;color:var(--teal-d);background:var(--tint);border-radius:14px;padding:14px 18px;margin:8px 0;user-select:all;word-break:break-word}
 .lbl{font-size:13px;color:var(--mute);margin-top:12px}
 .meaning{font-size:17px;margin:2px 0}
-.note{background:#f6f1e6;border-radius:12px;padding:10px 12px;font-size:15px;margin-top:10px}
-.pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 10px;background:#efe9de;color:var(--mute);margin-right:6px}
-.pill.ai{background:#fdf0cf;color:#6b4e00}
+.note{background:var(--note);border-radius:12px;padding:10px 12px;font-size:15px;margin-top:10px}
+.pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 10px;background:var(--pill);color:var(--mute);margin-right:6px}
+.pill.ai{background:var(--aibg);color:var(--aifg)}
 .msg{border-radius:14px;padding:12px 14px;margin-top:14px;font-size:15px}
 .msg.err{background:var(--errbg);color:var(--err)}
 .msg.info{background:var(--tint);color:var(--teal-d)}
 .empty{color:var(--mute);text-align:center;padding:26px 8px}
 .spin{width:18px;height:18px;border:3px solid #fff5;border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-3px;margin-right:8px;animation:sp .8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
-.skel{height:56px;border-radius:14px;background:linear-gradient(90deg,#eee8dc,#f7f2e8,#eee8dc);background-size:200% 100%;animation:sh 1.2s infinite;margin-top:12px}
+.skel{height:56px;border-radius:14px;background:linear-gradient(90deg,var(--nav),var(--note),var(--nav));background-size:200% 100%;animation:sh 1.2s infinite;margin-top:12px}
 @keyframes sh{to{background-position:-200% 0}}
 @media(prefers-reduced-motion:reduce){*{animation:none!important}}
 .item{border-top:1px solid var(--line);padding:12px 0}.item:first-child{border-top:0}
@@ -58,7 +62,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
 </head>
 <body>
 <div class="wrap">
-  <header><h1>Kaifal Haal</h1><span class="ar-brand" lang="ar" dir="rtl">كيف الحال؟</span></header>
+  <header><h1>Kaifal Haal</h1><span class="ar-brand" lang="ar" dir="rtl">كيف الحال؟</span><button class="s" id="theme" type="button" style="margin-left:auto">Dark mode</button></header>
   <p class="tag">Speak Their Language.</p>
   <div id="setup" class="msg err" hidden></div>
   <nav role="tablist">
@@ -110,7 +114,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
     <div class="card" style="margin-top:14px"><div class="row" style="margin-top:0"><h2 style="margin:0">History</h2><span class="sp"></span><button class="s" id="clearHist" type="button">Clear history</button></div><div id="histList"></div></div>
   </section>
 
-  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations are AI-generated and may be imperfect.</p>
+  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations are AI-generated and may be imperfect.</p>
 </div>
 
 <script>
@@ -162,6 +166,7 @@ function resultCard(r, opts = {}) {
   if (opts.compact) box.append(el("div", { class: "src" }, r.input));
   else box.append(el("span", { class: "pill" }, DIALECTS[r.dialect] || r.dialect), el("span", { class: "pill" }, r.detected || ""), el("span", { class: "pill" }, r.tone));
   box.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, r.ar));
+  if (r.pron) box.append(el("div", { class: "pron" }, r.pron));
   box.append(el("div", { class: "meaning" }, r.meaning));
   if (r.notes) box.append(el("div", { class: "note" }, r.notes));
   const row = el("div", { class: "row" });
@@ -214,7 +219,7 @@ async function run() {
   const payload = { text, source: $("source").value, dialect: $("dialect").value, tone: $("tone").value, explainIn: $("explain").value };
   try {
     const d = await translate(payload);
-    current = { id: uid(), input: text, ar: d.arabic_translation, meaning: d.meaning, notes: d.context_notes, detected: d.detected_source_language, dialect: payload.dialect, tone: payload.tone, explainIn: payload.explainIn, at: Date.now() };
+    current = { id: uid(), input: text, ar: d.arabic_translation, meaning: d.meaning, notes: d.context_notes, detected: d.detected_source_language, pron: d.pronunciation, dialect: payload.dialect, tone: payload.tone, explainIn: payload.explainIn, at: Date.now() };
     history.unshift(current); history = history.slice(0, 50);
     store.set("kh_history", history);
     renderResult(); renderSaved();
@@ -251,6 +256,7 @@ function renderPhrases() {
     const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" }, "Sample phrase"), el("div", { class: "meaning" }, p));
     if (g) {
       item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"), el("div", { class: "ar", lang: "ar", dir: "rtl" }, g.ar));
+      if (g.pron) item.append(el("div", { class: "pron" }, g.pron));
       if (g.notes) item.append(el("div", { class: "note" }, g.notes));
       const cp = el("button", { class: "s", type: "button" }, "Copy Arabic"); cp.onclick = () => copy(g.ar, cp);
       item.append(el("div", { class: "row" }, cp));
@@ -260,7 +266,7 @@ function renderPhrases() {
         b.disabled = true; b.textContent = "Generating…";
         try {
           const r = await translate({ text: p, source: "english", dialect: d, tone: "casual", explainIn: "english" });
-          generated[key] = { ar: r.arabic_translation, notes: r.context_notes }; renderPhrases();
+          generated[key] = { ar: r.arabic_translation, pron: r.pronunciation, notes: r.context_notes }; renderPhrases();
         } catch (e) { b.disabled = false; b.textContent = "Retry"; item.append(el("div", { class: "msg err", role: "alert" }, e.message)); }
       };
       item.append(el("div", { class: "row" }, b));
@@ -290,6 +296,10 @@ $("pbCat").replaceChildren(el("option", { value: "all" }, "All categories"), ...
 $("pbSearch").addEventListener("input", renderPhrases);
 $("pbDialect").value = $("dialect").value;
 $("dialect").addEventListener("change", () => { $("pbDialect").value = $("dialect").value; renderPhrases(); });
+
+function applyTheme(t) { document.documentElement.dataset.theme = t; $("theme").textContent = t === "dark" ? "Light mode" : "Dark mode"; }
+applyTheme(document.documentElement.dataset.theme || "light");
+$("theme").addEventListener("click", () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("kh_theme", t); } catch {} });
 
 fetch("/api/health").then((r) => r.json()).then((h) => {
   if (!h.configured) { $("setup").hidden = false; $("setup").textContent = "Setup needed: GEMINI_API_KEY is not set on the server. Copy .env.example to .env, add your key from aistudio.google.com/apikey, and restart."; }
