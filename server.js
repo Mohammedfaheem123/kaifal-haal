@@ -26,8 +26,10 @@ Rules:
 - Preserve meaning, intent and register. Translate ideas, not words one by one.
 - Use everyday local spoken wording for ${DIALECTS[d].country}. Never fall back to Modern Standard Arabic. Do not treat Gulf dialects as identical. If you are not sure a form is distinctly local, use a widely understood Gulf form and say so in context_notes.
 - Tone: ${TONES[tone]}
-- arabic_translation: Arabic script only. No Latin letters.
-- pronunciation: how to say your arabic_translation, written in plain English letters for English and Malayalam speakers (for example "Assalamu alaikum"). Use simple spelling with natural word breaks, no special symbols, and follow the pronunciation of the selected dialect.
+- variants: 1 or 2 entries, each with addressee, arabic and pronunciation.
+  - arabic: Arabic script only, no Latin letters.
+  - pronunciation: how to say that Arabic, in plain English letters for English and Malayalam speakers (for example "Wen inta?"). Simple spelling, natural word breaks, no special symbols, following the selected dialect.
+  - If the Arabic wording changes with the listener's gender, give two entries with addressee "to a man" and "to a woman". If it changes with the speaker's gender, use "man speaking" and "woman speaking". Otherwise give one entry with addressee "".
 - meaning: a natural rendering of your Arabic translation in ${EXPLAIN[explain]}.
 - context_notes: one or two short practical sentences only when useful (regional wording, ambiguity, formality, gender of addressee). Use an empty string if nothing is needed. Never claim a phrase is universal or invent usage claims. If the input is ambiguous, say so and state which reading you chose.
 - detected_source_language: one of "English", "Malayalam", "Manglish".
@@ -36,25 +38,38 @@ Rules:
 const schema = {
   type: Type.OBJECT,
   properties: {
-    arabic_translation: { type: Type.STRING },
-    pronunciation: { type: Type.STRING },
+    variants: {
+      type: Type.ARRAY,
+      items: {
+        type: Type.OBJECT,
+        properties: { addressee: { type: Type.STRING }, arabic: { type: Type.STRING }, pronunciation: { type: Type.STRING } },
+        required: ["addressee", "arabic", "pronunciation"],
+      },
+    },
     meaning: { type: Type.STRING },
     context_notes: { type: Type.STRING },
     detected_source_language: { type: Type.STRING },
     target_dialect: { type: Type.STRING },
     tone: { type: Type.STRING },
   },
-  required: ["arabic_translation", "pronunciation", "meaning", "context_notes", "detected_source_language", "target_dialect", "tone"],
+  required: ["variants", "meaning", "context_notes", "detected_source_language", "target_dialect", "tone"],
 };
 
 function validateOutput(o) {
   if (!o || typeof o !== "object") return null;
-  for (const k of Object.keys(schema.properties)) if (typeof o[k] !== "string") return null;
-  if (!o.arabic_translation.trim() || !o.meaning.trim() || !o.pronunciation.trim()) return null;
-  if (!/[\u0600-\u06FF]/.test(o.arabic_translation)) return null;
+  for (const k of ["meaning", "context_notes", "detected_source_language"]) if (typeof o[k] !== "string") return null;
+  if (!o.meaning.trim()) return null;
+  if (!Array.isArray(o.variants) || o.variants.length < 1 || o.variants.length > 2) return null;
+  const variants = [];
+  for (const v of o.variants) {
+    if (!v || typeof v.arabic !== "string" || typeof v.pronunciation !== "string") return null;
+    if (!/[\u0600-\u06FF]/.test(v.arabic) || !v.pronunciation.trim()) return null;
+    variants.push({ addressee: typeof v.addressee === "string" ? v.addressee.trim() : "", arabic: v.arabic.trim(), pronunciation: v.pronunciation.trim() });
+  }
   return {
-    arabic_translation: o.arabic_translation.trim(),
-    pronunciation: o.pronunciation.trim(),
+    variants,
+    arabic_translation: variants[0].arabic,
+    pronunciation: variants[0].pronunciation,
     meaning: o.meaning.trim(),
     context_notes: o.context_notes.trim(),
     detected_source_language: o.detected_source_language.trim(),

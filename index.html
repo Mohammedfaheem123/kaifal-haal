@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<script>try{var t=localStorage.getItem("kh_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
+<title>Kaifal Haal — Speak Their Language.</title>
+<meta name="description" content="Kaifal Haal is an AI-powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600&family=Noto+Sans+Malayalam:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf7f2;--card:#fff;--ink:#1d2b2a;--mute:#5d6b69;--line:#e6e0d5;--teal:#0f5e5a;--teal-d:#0a4744;--tint:#e5f1ef;--err:#a63a2b;--errbg:#fbeae6;--r:18px;--btn:#0f5e5a;--btn-d:#0a4744;--nav:#efe9de;--note:#f6f1e6;--pill:#efe9de;--field:#fff;--aibg:#fdf0cf;--aifg:#6b4e00}
+:root[data-theme=dark]{--bg:#111b1a;--card:#1a2726;--ink:#e8efee;--mute:#9db0ad;--line:#2b3d3b;--teal:#6fd0c8;--teal-d:#a6e4de;--tint:#1e3532;--err:#f0a090;--errbg:#3a1f1a;--btn:#1f8a83;--btn-d:#2aa39b;--nav:#223130;--note:#243433;--pill:#243433;--field:#142120;--aibg:#4a3a10;--aifg:#f6d98a}
+.pron{font-size:18px;color:var(--teal);margin:2px 2px 6px}
+.vlabel{font-size:13px;color:var(--mute);margin-top:12px}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 Inter,"Noto Sans Malayalam",system-ui,sans-serif}
+.wrap{max-width:880px;margin:0 auto;padding:20px 16px 56px}
+header{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:6px}
+h1{font:700 28px/1.1 "Bricolage Grotesque",sans-serif;margin:0;color:var(--teal)}
+.ar-brand{font:600 22px "Noto Naskh Arabic",serif;color:var(--teal-d)}
+.tag{color:var(--mute);margin:0 0 18px}
+nav{display:flex;gap:4px;background:var(--nav);padding:4px;border-radius:999px;margin-bottom:18px}
+nav button{flex:1;border:0;background:none;padding:10px 8px;border-radius:999px;font:500 15px Inter,sans-serif;color:var(--mute);cursor:pointer}
+nav button[aria-selected=true]{background:var(--card);color:var(--teal);box-shadow:0 1px 4px #0001}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:0 2px 10px #1d2b2a0d}
+.grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+@media(max-width:560px){.grid{grid-template-columns:1fr}}
+label.f{display:block;font-size:13px;color:var(--mute);margin-bottom:4px}
+select,textarea,input[type=search]{width:100%;border:1px solid var(--line);border-radius:12px;background:var(--field);color:var(--ink);font:inherit;padding:10px 12px}
+select:focus,textarea:focus,input:focus,button:focus-visible{outline:2px solid var(--teal);outline-offset:1px}
+textarea{min-height:140px;resize:vertical;font-size:18px;line-height:1.5}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:10px}
+.sp{flex:1}.count{font-size:13px;color:var(--mute)}.count.over{color:var(--err);font-weight:600}
+button.p{background:var(--btn);color:#fff;border:0;border-radius:12px;padding:12px 22px;font:600 16px Inter,sans-serif;cursor:pointer}
+button.p:hover{background:var(--btn-d)}button.p:disabled{opacity:.55;cursor:not-allowed}
+button.s{background:var(--card);color:var(--teal);border:1px solid var(--line);border-radius:10px;padding:8px 12px;font:500 14px Inter,sans-serif;cursor:pointer}
+button.s:hover{background:var(--tint)}
+.opts{margin:12px 0 4px}
+.result{margin-top:16px}
+.ar{direction:rtl;text-align:right;font:600 30px/1.7 "Noto Naskh Arabic",serif;color:var(--teal-d);background:var(--tint);border-radius:14px;padding:14px 18px;margin:8px 0;user-select:all;word-break:break-word}
+.lbl{font-size:13px;color:var(--mute);margin-top:12px}
+.meaning{font-size:17px;margin:2px 0}
+.note{background:var(--note);border-radius:12px;padding:10px 12px;font-size:15px;margin-top:10px}
+.pill{display:inline-block;font-size:12px;border-radius:999px;padding:2px 10px;background:var(--pill);color:var(--mute);margin-right:6px}
+.pill.ai{background:var(--aibg);color:var(--aifg)}
+.msg{border-radius:14px;padding:12px 14px;margin-top:14px;font-size:15px}
+.msg.err{background:var(--errbg);color:var(--err)}
+.msg.info{background:var(--tint);color:var(--teal-d)}
+.empty{color:var(--mute);text-align:center;padding:26px 8px}
+.spin{width:18px;height:18px;border:3px solid #fff5;border-top-color:#fff;border-radius:50%;display:inline-block;vertical-align:-3px;margin-right:8px;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+.skel{height:56px;border-radius:14px;background:linear-gradient(90deg,var(--nav),var(--note),var(--nav));background-size:200% 100%;animation:sh 1.2s infinite;margin-top:12px}
+@keyframes sh{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){*{animation:none!important}}
+.item{border-top:1px solid var(--line);padding:12px 0}.item:first-child{border-top:0}
+.item .src{color:var(--mute);font-size:14px}.item .ar{font-size:22px;padding:8px 12px}
+h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
+.foot{color:var(--mute);font-size:13px;margin-top:22px}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>Kaifal Haal</h1><span class="ar-brand" lang="ar" dir="rtl">كيف الحال؟</span><button class="s" id="theme" type="button" style="margin-left:auto">Dark mode</button></header>
+  <p class="tag">Speak Their Language.</p>
+  <div id="setup" class="msg err" hidden></div>
+  <nav role="tablist">
+    <button role="tab" data-tab="translate" aria-selected="true">Translate</button>
+    <button role="tab" data-tab="phrasebook" aria-selected="false">Phrasebook</button>
+    <button role="tab" data-tab="saved" aria-selected="false">Saved</button>
+  </nav>
+
+  <section id="tab-translate" class="card">
+    <div class="grid">
+      <div><label class="f" for="source">From</label>
+        <select id="source"><option value="auto">Auto detect</option><option value="english">English</option><option value="malayalam">Malayalam (മലയാളം)</option><option value="manglish">Manglish</option></select></div>
+      <div><label class="f" for="dialect">To</label>
+        <select id="dialect"><option value="saudi">🇸🇦 Saudi Arabic</option><option value="emirati">🇦🇪 Emirati Arabic</option><option value="kuwaiti">🇰🇼 Kuwaiti Arabic</option><option value="qatari">🇶🇦 Qatari Arabic</option></select></div>
+    </div>
+    <div class="grid opts">
+      <div><label class="f" for="tone">Tone</label>
+        <select id="tone"><option value="casual">Everyday / Casual</option><option value="polite">Polite</option><option value="professional">Professional</option></select></div>
+      <div><label class="f" for="explain">Explain meaning in</label>
+        <select id="explain"><option value="same">Same as input</option><option value="english">English</option><option value="malayalam">Malayalam</option></select></div>
+    </div>
+    <label class="f" for="input" style="margin-top:12px">Your text</label>
+    <textarea id="input" placeholder="Type in English, മലയാളം, or Manglish — e.g. “Ente bag evide?”" maxlength="500"></textarea>
+    <div class="row">
+      <button class="s" id="clear" type="button">Clear</button>
+      <button class="s" id="swap" type="button" title="Use the meaning as new input">Swap</button>
+      <span class="sp"></span><span class="count" id="count">0 / 500</span>
+      <button class="p" id="go" type="button">Translate</button>
+    </div>
+    <div id="status" aria-live="polite"></div>
+    <div id="out"><div class="empty">Your translation will appear here.</div></div>
+  </section>
+
+  <section id="tab-phrasebook" hidden>
+    <div class="card">
+      <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are produced live by Gemini and are <b>not reviewed by native speakers</b>.</p>
+      <div class="grid">
+        <div><label class="f" for="pbDialect">Dialect</label><select id="pbDialect"></select></div>
+        <div><label class="f" for="pbCat">Category</label><select id="pbCat"></select></div>
+      </div>
+      <label class="f" for="pbSearch" style="margin-top:12px">Search</label>
+      <input type="search" id="pbSearch" placeholder="Search phrases">
+      <div id="pbList"></div>
+    </div>
+  </section>
+
+  <section id="tab-saved" hidden>
+    <div class="card"><div class="row" style="margin-top:0"><h2 style="margin:0">Favorites</h2></div><div id="favList"></div></div>
+    <div class="card" style="margin-top:14px"><div class="row" style="margin-top:0"><h2 style="margin:0">History</h2><span class="sp"></span><button class="s" id="clearHist" type="button">Clear history</button></div><div id="histList"></div></div>
+  </section>
+
+  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations are AI-generated and may be imperfect. Listen uses your device's Arabic voice, which usually speaks standard Arabic rather than the local accent.</p>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const DIALECTS = { saudi: "🇸🇦 Saudi Arabic", emirati: "🇦🇪 Emirati Arabic", kuwaiti: "🇰🇼 Kuwaiti Arabic", qatari: "🇶🇦 Qatari Arabic" };
+const MAX = 500;
+const PHRASES = {
+  "Greetings and introductions": ["How are you?", "Nice to meet you.", "My name is ___ and I am from Kerala.", "Good morning."],
+  "Shopping and bargaining": ["How much is this?", "That's too expensive. Can you give a discount?", "Do you have a bigger size?", "I'll take it."],
+  "Jobs and workplace": ["I am looking for a job.", "What time does my shift start?", "I need a day off tomorrow.", "When is the salary paid?"],
+  "Taxi and transportation": ["Please take me to the airport.", "Please stop here.", "Can you use the meter?", "How long will it take?"],
+  "Directions": ["Where is the nearest bus stop?", "Turn left at the traffic light.", "Is it far from here?", "I am lost."],
+  "Food and restaurants": ["A table for two, please.", "No spice, please.", "Can I have the bill?", "Is this food halal?"],
+  "Housing and accommodation": ["I am looking for a room to rent.", "How much is the rent per month?", "The air conditioner is not working.", "Is electricity included?"],
+  "Healthcare": ["I need to see a doctor.", "I have a fever and a headache.", "Where is the nearest pharmacy?", "I am allergic to this medicine."],
+  "Emergencies": ["Please call an ambulance.", "I need help!", "Call the police.", "I lost my passport."],
+  "Everyday conversations": ["Please speak slowly.", "I don't understand.", "Thank you very much.", "Can you help me?"]
+};
+
+// ---------- storage (graceful failure) ----------
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)) || []; } catch { return []; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch { return false; } }
+};
+let history = store.get("kh_history"), favs = store.get("kh_favs");
+let current = null;
+
+// ---------- helpers ----------
+function el(tag, props = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(props)) {
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  kids.flat().forEach((c) => n.append(c));
+  return n;
+}
+async function copy(text, btn) {
+  try { await navigator.clipboard.writeText(text); } catch {
+    const t = el("textarea"); t.value = text; document.body.append(t); t.select();
+    try { document.execCommand("copy"); } catch {} t.remove();
+  }
+  if (btn) { const o = btn.textContent; btn.textContent = "Copied"; setTimeout(() => (btn.textContent = o), 1200); }
+}
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+const isFav = (r) => favs.some((f) => f.ar === r.ar && f.dialect === r.dialect && f.tone === r.tone);
+
+// ---------- text to speech (device voices) ----------
+const LOCALES = { saudi: "ar-SA", emirati: "ar-AE", kuwaiti: "ar-KW", qatari: "ar-QA" };
+let voices = [];
+const canSpeak = "speechSynthesis" in window;
+function loadVoices() { if (canSpeak) voices = speechSynthesis.getVoices(); }
+loadVoices();
+if (canSpeak) speechSynthesis.addEventListener("voiceschanged", loadVoices);
+function speak(text, dialect, btn) {
+  const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
+  const flash = (m) => { btn.textContent = m; setTimeout(() => (btn.textContent = label), 2500); };
+  if (!canSpeak) return flash("Speech not supported");
+  speechSynthesis.cancel();
+  const loc = LOCALES[dialect] || "ar-SA";
+  const norm = (x) => x.lang.replace("_", "-").toLowerCase();
+  const v = voices.find((x) => norm(x) === loc.toLowerCase()) || voices.find((x) => norm(x).startsWith("ar"));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = v ? v.lang : loc; if (v) u.voice = v; u.rate = 0.9;
+  u.onstart = () => (btn.textContent = "Playing…");
+  u.onend = () => (btn.textContent = label);
+  u.onerror = () => flash("No Arabic voice available");
+  speechSynthesis.speak(u);
+}
+function variantButtons(v, dialect) {
+  const cp = el("button", { class: "s", type: "button" }, "Copy Arabic"); cp.onclick = () => copy(v.arabic, cp);
+  const ls = el("button", { class: "s", type: "button" }, "Listen"); ls.onclick = () => speak(v.arabic, dialect, ls);
+  return el("div", { class: "row", style: "margin-top:4px" }, cp, ls);
+}
+
+function resultCard(r, opts = {}) {
+  const box = el("div", { class: opts.compact ? "item" : "result" });
+  if (opts.compact) box.append(el("div", { class: "src" }, r.input));
+  else box.append(el("span", { class: "pill" }, DIALECTS[r.dialect] || r.dialect), el("span", { class: "pill" }, r.detected || ""), el("span", { class: "pill" }, r.tone));
+  const vs = r.variants && r.variants.length ? r.variants : [{ addressee: "", arabic: r.ar, pronunciation: r.pron }];
+  vs.forEach((v) => {
+    if (v.addressee) box.append(el("div", { class: "vlabel" }, v.addressee));
+    box.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, v.arabic));
+    if (v.pronunciation) box.append(el("div", { class: "pron" }, v.pronunciation));
+    box.append(variantButtons(v, r.dialect));
+  });
+  box.append(el("div", { class: "meaning" }, r.meaning));
+  if (r.notes) box.append(el("div", { class: "note" }, r.notes));
+  const row = el("div", { class: "row" });
+  if (opts.fav) { const f = el("button", { class: "s", type: "button" }, isFav(r) ? "Remove favorite" : "Save favorite"); f.onclick = () => { toggleFav(r); renderAll(); }; row.append(f); }
+  (opts.extra || []).forEach((b) => row.append(b));
+  box.append(row);
+  return box;
+}
+function toggleFav(r) {
+  const i = favs.findIndex((f) => f.ar === r.ar && f.dialect === r.dialect && f.tone === r.tone);
+  if (i >= 0) favs.splice(i, 1); else favs.unshift({ ...r, id: uid() });
+  store.set("kh_favs", favs);
+}
+
+// ---------- API ----------
+async function translate(payload) {
+  let res;
+  try {
+    res = await fetch("/api/translate", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(payload) });
+  } catch { throw { code: "network", message: "Could not reach the server. Check your connection and retry." }; }
+  let data = null; try { data = await res.json(); } catch {}
+  if (!res.ok) throw data?.error || { code: "network", message: "Unexpected server response." };
+  return data;
+}
+
+// ---------- translate tab ----------
+let lastCooldown = 0;
+function updateCount() {
+  const n = $("input").value.length;
+  $("count").textContent = `${n} / ${MAX}`;
+  $("count").classList.toggle("over", n > MAX);
+}
+function showError(e) {
+  const box = el("div", { class: "msg err", role: "alert" }, e.message || "Something went wrong.");
+  if (e.code !== "missing_key" && e.code !== "bad_key" && e.code !== "invalid_input") {
+    const b = el("button", { class: "s", type: "button", style: "margin-left:10px" }, "Retry"); b.onclick = run; box.append(b);
+  }
+  $("out").replaceChildren(box);
+}
+async function run() {
+  const text = $("input").value.trim();
+  if (!text) return showError({ code: "invalid_input", message: "Enter some text to translate." });
+  if (text.length > MAX) return showError({ code: "invalid_input", message: `Text is too long. Limit is ${MAX} characters.` });
+  if (Date.now() - lastCooldown < 1500) return;
+  lastCooldown = Date.now();
+  const go = $("go"); go.disabled = true; go.replaceChildren(el("span", { class: "spin" }), "Translating");
+  $("out").replaceChildren(el("div", { class: "skel" }), el("div", { class: "skel", style: "height:24px;width:70%" }));
+  const payload = { text, source: $("source").value, dialect: $("dialect").value, tone: $("tone").value, explainIn: $("explain").value };
+  try {
+    const d = await translate(payload);
+    current = { id: uid(), input: text, ar: d.arabic_translation, meaning: d.meaning, notes: d.context_notes, detected: d.detected_source_language, pron: d.pronunciation, variants: d.variants, dialect: payload.dialect, tone: payload.tone, explainIn: payload.explainIn, at: Date.now() };
+    history.unshift(current); history = history.slice(0, 50);
+    store.set("kh_history", history);
+    renderResult(); renderSaved();
+  } catch (e) { showError(e); }
+  finally { go.disabled = false; go.textContent = "Translate"; }
+}
+function renderResult() { $("out").replaceChildren(resultCard(current, { fav: true })); }
+
+// ---------- saved tab ----------
+function listOf(arr, target, kind) {
+  if (!arr.length) { target.replaceChildren(el("div", { class: "empty" }, kind === "fav" ? "No favorites yet. Save a translation to keep it here." : "No translations yet.")); return; }
+  target.replaceChildren(...arr.map((r) => {
+    const reopen = el("button", { class: "s", type: "button" }, "Reopen"); reopen.onclick = () => { current = r; $("input").value = r.input; $("dialect").value = r.dialect; $("tone").value = r.tone; updateCount(); renderResult(); setTab("translate"); };
+    const del = el("button", { class: "s", type: "button" }, "Delete");
+    del.onclick = () => { if (kind === "fav") { favs = favs.filter((x) => x.id !== r.id); store.set("kh_favs", favs); } else { history = history.filter((x) => x.id !== r.id); store.set("kh_history", history); } renderAll(); };
+    return resultCard(r, { compact: true, fav: true, extra: [reopen, del] });
+  }));
+}
+function renderSaved() { listOf(favs, $("favList"), "fav"); listOf(history, $("histList"), "hist"); }
+function renderAll() { renderSaved(); if (current) renderResult(); renderPhrases(); }
+
+// ---------- phrasebook ----------
+const generated = {}; // key: dialect|phrase -> result (session only)
+function renderPhrases() {
+  const d = $("pbDialect").value, cat = $("pbCat").value, q = $("pbSearch").value.trim().toLowerCase();
+  const rows = [];
+  for (const [c, list] of Object.entries(PHRASES)) {
+    if (cat !== "all" && cat !== c) continue;
+    list.filter((p) => !q || p.toLowerCase().includes(q) || c.toLowerCase().includes(q)).forEach((p) => rows.push([c, p]));
+  }
+  if (!rows.length) { $("pbList").replaceChildren(el("div", { class: "empty" }, "No phrases match your search.")); return; }
+  $("pbList").replaceChildren(...rows.map(([c, p]) => {
+    const key = d + "|" + p, g = generated[key];
+    const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" }, "Sample phrase"), el("div", { class: "meaning" }, p));
+    if (g) {
+      item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"));
+      g.variants.forEach((v) => {
+        if (v.addressee) item.append(el("div", { class: "vlabel" }, v.addressee));
+        item.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, v.arabic));
+        if (v.pronunciation) item.append(el("div", { class: "pron" }, v.pronunciation));
+        item.append(variantButtons(v, d));
+      });
+      if (g.notes) item.append(el("div", { class: "note" }, g.notes));
+    } else {
+      const b = el("button", { class: "s", type: "button" }, "Show in " + DIALECTS[d].slice(3));
+      b.onclick = async () => {
+        b.disabled = true; b.textContent = "Generating…";
+        try {
+          const r = await translate({ text: p, source: "english", dialect: d, tone: "casual", explainIn: "english" });
+          generated[key] = { variants: r.variants, notes: r.context_notes }; renderPhrases();
+        } catch (e) { b.disabled = false; b.textContent = "Retry"; item.append(el("div", { class: "msg err", role: "alert" }, e.message)); }
+      };
+      item.append(el("div", { class: "row" }, b));
+    }
+    return item;
+  }));
+}
+
+// ---------- tabs & init ----------
+function setTab(t) {
+  document.querySelectorAll("nav button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+  ["translate", "phrasebook", "saved"].forEach((x) => ($("tab-" + x).hidden = x !== t));
+}
+document.querySelectorAll("nav button").forEach((b) => b.addEventListener("click", () => setTab(b.dataset.tab)));
+$("input").addEventListener("input", updateCount);
+$("input").addEventListener("keydown", (e) => { if ((e.metaKey || e.ctrlKey) && e.key === "Enter") run(); });
+$("go").addEventListener("click", run);
+$("clear").addEventListener("click", () => { $("input").value = ""; updateCount(); $("out").replaceChildren(el("div", { class: "empty" }, "Your translation will appear here.")); $("input").focus(); });
+$("swap").addEventListener("click", () => {
+  if (!current) return showError({ code: "invalid_input", message: "Translate something first, then swap to use its meaning as new input." });
+  $("input").value = current.meaning; $("source").value = "auto"; updateCount(); $("input").focus();
+});
+$("clearHist").addEventListener("click", () => { if (history.length && confirm("Clear all translation history?")) { history = []; store.set("kh_history", history); renderSaved(); } });
+$("pbDialect").replaceChildren(...Object.entries(DIALECTS).map(([k, v]) => el("option", { value: k }, v)));
+$("pbCat").replaceChildren(el("option", { value: "all" }, "All categories"), ...Object.keys(PHRASES).map((c) => el("option", { value: c }, c)));
+["pbDialect", "pbCat"].forEach((i) => $(i).addEventListener("change", renderPhrases));
+$("pbSearch").addEventListener("input", renderPhrases);
+$("pbDialect").value = $("dialect").value;
+$("dialect").addEventListener("change", () => { $("pbDialect").value = $("dialect").value; renderPhrases(); });
+
+function applyTheme(t) { document.documentElement.dataset.theme = t; $("theme").textContent = t === "dark" ? "Light mode" : "Dark mode"; }
+applyTheme(document.documentElement.dataset.theme || "light");
+$("theme").addEventListener("click", () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("kh_theme", t); } catch {} });
+
+fetch("/api/health").then((r) => r.json()).then((h) => {
+  if (!h.configured) { $("setup").hidden = false; $("setup").textContent = "Setup needed: GEMINI_API_KEY is not set on the server. Copy .env.example to .env, add your key from aistudio.google.com/apikey, and restart."; }
+}).catch(() => { $("setup").hidden = false; $("setup").textContent = "Can't reach the Kaifal Haal server. Start it with: npm start"; });
+updateCount(); renderSaved(); renderPhrases();
+</script>
+</body>
+</html>
