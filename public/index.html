@@ -13,6 +13,7 @@
 :root{--bg:#faf7f2;--card:#fff;--ink:#1d2b2a;--mute:#5d6b69;--line:#e6e0d5;--teal:#0f5e5a;--teal-d:#0a4744;--tint:#e5f1ef;--err:#a63a2b;--errbg:#fbeae6;--r:18px;--btn:#0f5e5a;--btn-d:#0a4744;--nav:#efe9de;--note:#f6f1e6;--pill:#efe9de;--field:#fff;--aibg:#fdf0cf;--aifg:#6b4e00}
 :root[data-theme=dark]{--bg:#111b1a;--card:#1a2726;--ink:#e8efee;--mute:#9db0ad;--line:#2b3d3b;--teal:#6fd0c8;--teal-d:#a6e4de;--tint:#1e3532;--err:#f0a090;--errbg:#3a1f1a;--btn:#1f8a83;--btn-d:#2aa39b;--nav:#223130;--note:#243433;--pill:#243433;--field:#142120;--aibg:#4a3a10;--aifg:#f6d98a}
 .pron{font-size:18px;color:var(--teal);margin:2px 2px 6px}
+.vlabel{font-size:13px;color:var(--mute);margin-top:12px}
 *{box-sizing:border-box}html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font:16px/1.5 Inter,"Noto Sans Malayalam",system-ui,sans-serif}
 .wrap{max-width:880px;margin:0 auto;padding:20px 16px 56px}
@@ -114,7 +115,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
     <div class="card" style="margin-top:14px"><div class="row" style="margin-top:0"><h2 style="margin:0">History</h2><span class="sp"></span><button class="s" id="clearHist" type="button">Clear history</button></div><div id="histList"></div></div>
   </section>
 
-  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations are AI-generated and may be imperfect.</p>
+  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations are AI-generated and may be imperfect. Listen uses your device's Arabic voice, which usually speaks standard Arabic rather than the local accent.</p>
 </div>
 
 <script>
@@ -161,17 +162,48 @@ async function copy(text, btn) {
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
 const isFav = (r) => favs.some((f) => f.ar === r.ar && f.dialect === r.dialect && f.tone === r.tone);
 
+// ---------- text to speech (device voices) ----------
+const LOCALES = { saudi: "ar-SA", emirati: "ar-AE", kuwaiti: "ar-KW", qatari: "ar-QA" };
+let voices = [];
+const canSpeak = "speechSynthesis" in window;
+function loadVoices() { if (canSpeak) voices = speechSynthesis.getVoices(); }
+loadVoices();
+if (canSpeak) speechSynthesis.addEventListener("voiceschanged", loadVoices);
+function speak(text, dialect, btn) {
+  const label = btn.dataset.label || btn.textContent; btn.dataset.label = label;
+  const flash = (m) => { btn.textContent = m; setTimeout(() => (btn.textContent = label), 2500); };
+  if (!canSpeak) return flash("Speech not supported");
+  speechSynthesis.cancel();
+  const loc = LOCALES[dialect] || "ar-SA";
+  const norm = (x) => x.lang.replace("_", "-").toLowerCase();
+  const v = voices.find((x) => norm(x) === loc.toLowerCase()) || voices.find((x) => norm(x).startsWith("ar"));
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = v ? v.lang : loc; if (v) u.voice = v; u.rate = 0.9;
+  u.onstart = () => (btn.textContent = "Playing…");
+  u.onend = () => (btn.textContent = label);
+  u.onerror = () => flash("No Arabic voice available");
+  speechSynthesis.speak(u);
+}
+function variantButtons(v, dialect) {
+  const cp = el("button", { class: "s", type: "button" }, "Copy Arabic"); cp.onclick = () => copy(v.arabic, cp);
+  const ls = el("button", { class: "s", type: "button" }, "Listen"); ls.onclick = () => speak(v.arabic, dialect, ls);
+  return el("div", { class: "row", style: "margin-top:4px" }, cp, ls);
+}
+
 function resultCard(r, opts = {}) {
   const box = el("div", { class: opts.compact ? "item" : "result" });
   if (opts.compact) box.append(el("div", { class: "src" }, r.input));
   else box.append(el("span", { class: "pill" }, DIALECTS[r.dialect] || r.dialect), el("span", { class: "pill" }, r.detected || ""), el("span", { class: "pill" }, r.tone));
-  box.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, r.ar));
-  if (r.pron) box.append(el("div", { class: "pron" }, r.pron));
+  const vs = r.variants && r.variants.length ? r.variants : [{ addressee: "", arabic: r.ar, pronunciation: r.pron }];
+  vs.forEach((v) => {
+    if (v.addressee) box.append(el("div", { class: "vlabel" }, v.addressee));
+    box.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, v.arabic));
+    if (v.pronunciation) box.append(el("div", { class: "pron" }, v.pronunciation));
+    box.append(variantButtons(v, r.dialect));
+  });
   box.append(el("div", { class: "meaning" }, r.meaning));
   if (r.notes) box.append(el("div", { class: "note" }, r.notes));
   const row = el("div", { class: "row" });
-  const cp = el("button", { class: "s", type: "button" }, "Copy Arabic"); cp.onclick = () => copy(r.ar, cp);
-  row.append(cp);
   if (opts.fav) { const f = el("button", { class: "s", type: "button" }, isFav(r) ? "Remove favorite" : "Save favorite"); f.onclick = () => { toggleFav(r); renderAll(); }; row.append(f); }
   (opts.extra || []).forEach((b) => row.append(b));
   box.append(row);
@@ -219,7 +251,7 @@ async function run() {
   const payload = { text, source: $("source").value, dialect: $("dialect").value, tone: $("tone").value, explainIn: $("explain").value };
   try {
     const d = await translate(payload);
-    current = { id: uid(), input: text, ar: d.arabic_translation, meaning: d.meaning, notes: d.context_notes, detected: d.detected_source_language, pron: d.pronunciation, dialect: payload.dialect, tone: payload.tone, explainIn: payload.explainIn, at: Date.now() };
+    current = { id: uid(), input: text, ar: d.arabic_translation, meaning: d.meaning, notes: d.context_notes, detected: d.detected_source_language, pron: d.pronunciation, variants: d.variants, dialect: payload.dialect, tone: payload.tone, explainIn: payload.explainIn, at: Date.now() };
     history.unshift(current); history = history.slice(0, 50);
     store.set("kh_history", history);
     renderResult(); renderSaved();
@@ -255,18 +287,21 @@ function renderPhrases() {
     const key = d + "|" + p, g = generated[key];
     const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" }, "Sample phrase"), el("div", { class: "meaning" }, p));
     if (g) {
-      item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"), el("div", { class: "ar", lang: "ar", dir: "rtl" }, g.ar));
-      if (g.pron) item.append(el("div", { class: "pron" }, g.pron));
+      item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"));
+      g.variants.forEach((v) => {
+        if (v.addressee) item.append(el("div", { class: "vlabel" }, v.addressee));
+        item.append(el("div", { class: "ar", lang: "ar", dir: "rtl" }, v.arabic));
+        if (v.pronunciation) item.append(el("div", { class: "pron" }, v.pronunciation));
+        item.append(variantButtons(v, d));
+      });
       if (g.notes) item.append(el("div", { class: "note" }, g.notes));
-      const cp = el("button", { class: "s", type: "button" }, "Copy Arabic"); cp.onclick = () => copy(g.ar, cp);
-      item.append(el("div", { class: "row" }, cp));
     } else {
       const b = el("button", { class: "s", type: "button" }, "Show in " + DIALECTS[d].slice(3));
       b.onclick = async () => {
         b.disabled = true; b.textContent = "Generating…";
         try {
           const r = await translate({ text: p, source: "english", dialect: d, tone: "casual", explainIn: "english" });
-          generated[key] = { ar: r.arabic_translation, pron: r.pronunciation, notes: r.context_notes }; renderPhrases();
+          generated[key] = { variants: r.variants, notes: r.context_notes }; renderPhrases();
         } catch (e) { b.disabled = false; b.textContent = "Retry"; item.append(el("div", { class: "msg err", role: "alert" }, e.message)); }
       };
       item.append(el("div", { class: "row" }, b));
