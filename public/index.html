@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark">
 <script>try{var t=localStorage.getItem("kh_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Kaifal Haal — Speak Their Language.</title>
-<meta name="description" content="Kaifal Haal.">
+<meta name="description" content="Kaifal Haal is an AI-powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600&family=Noto+Sans+Malayalam:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -58,13 +58,16 @@ button.s:hover{background:var(--tint)}
 .item .src{color:var(--mute);font-size:14px}.item .ar{font-size:22px;padding:8px 12px}
 h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
 .foot{color:var(--mute);font-size:13px;margin-top:22px}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:12px 0 4px}
+.chip{white-space:nowrap;border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:500 14px Inter,sans-serif;cursor:pointer}
+.chip[aria-pressed=true]{background:var(--btn);color:#fff;border-color:var(--btn)}
 [hidden]{display:none!important}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header><h1>Kaifal Haal</h1><span class="ar-brand" lang="ar" dir="rtl">كيف الحال؟</span><button class="s" id="theme" type="button" style="margin-left:auto">Dark mode</button></header>
-  <p class="tag">Speak with ease.</p>
+  <p class="tag">Speak Their Language.</p>
   <div id="setup" class="msg err" hidden></div>
   <nav role="tablist">
     <button role="tab" data-tab="translate" aria-selected="true">Translate</button>
@@ -102,8 +105,9 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
       <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are not reviewed by native speakers.</p>
       <div class="grid">
         <div><label class="f" for="pbDialect">Dialect</label><select id="pbDialect"></select></div>
-        <div><label class="f" for="pbCat">Category</label><select id="pbCat"></select></div>
+        <select id="pbCat" hidden></select>
       </div>
+      <div class="chips" id="pbChips"></div>
       <label class="f" for="pbSearch" style="margin-top:12px">Search</label>
       <input type="search" id="pbSearch" placeholder="Search phrases">
       <div id="pbList"></div>
@@ -298,7 +302,7 @@ function renderPhrases() {
     } else {
       const b = el("button", { class: "s", type: "button" }, "Show in " + DIALECTS[d]);
       b.onclick = async () => {
-        b.disabled = true; b.textContent = "Generating...";
+        b.disabled = true; b.textContent = "Generating…";
         try {
           const r = await translate({ text: p, source: "english", dialect: d, tone: "casual", explainIn: "english" });
           generated[key] = { variants: r.variants, notes: r.context_notes }; renderPhrases();
@@ -327,6 +331,15 @@ $("swap").addEventListener("click", () => {
 $("clearHist").addEventListener("click", () => { if (history.length && confirm("Clear all translation history?")) { history = []; store.set("kh_history", history); renderSaved(); } });
 $("pbDialect").replaceChildren(...Object.entries(DIALECTS).map(([k, v]) => el("option", { value: k }, v)));
 $("pbCat").replaceChildren(el("option", { value: "all" }, "All categories"), ...Object.keys(PHRASES).map((c) => el("option", { value: c }, c)));
+function renderChips() {
+  const cats = ["all", ...Object.keys(PHRASES)];
+  $("pbChips").replaceChildren(...cats.map((c) => {
+    const b = el("button", { class: "chip", type: "button", "aria-pressed": String($("pbCat").value === c) }, c === "all" ? "All" : c);
+    b.onclick = () => { $("pbCat").value = c; renderChips(); renderPhrases(); };
+    return b;
+  }));
+}
+renderChips();
 ["pbDialect", "pbCat"].forEach((i) => $(i).addEventListener("change", renderPhrases));
 $("pbSearch").addEventListener("input", renderPhrases);
 $("pbDialect").value = $("dialect").value;
@@ -337,7 +350,7 @@ applyTheme(document.documentElement.dataset.theme || "light");
 $("theme").addEventListener("click", () => { const t = document.documentElement.dataset.theme === "dark" ? "light" : "dark"; applyTheme(t); try { localStorage.setItem("kh_theme", t); } catch {} });
 
 fetch("/api/health").then((r) => r.json()).then((h) => {
-  if (!h.configured) { $("setup").hidden = false; $("setup").textContent = "Setup needed: GEMINI_API_KEY is not set on the server. Copy .env.example to .env, add your key from aistudio.google.com/apikey, and restart."; }
+  if (!h.configured) { $("setup").hidden = false; $("setup").textContent = "Translation is unavailable right now. The server isn't set up yet."; }
 }).catch(() => { $("setup").hidden = false; $("setup").textContent = "Can't reach the Kaifal Haal server. Start it with: npm start"; });
 updateCount(); renderSaved(); renderPhrases();
 </script>
