@@ -123,12 +123,12 @@ app.post("/api/translate", async (req, res) => {
   } catch (err) {
     const status = err?.status || err?.code;
     const msg = String(err?.message || "");
-    if (status === 429 || /quota|RESOURCE_EXHAUSTED/i.test(msg)) return fail(429, "quota", "Gemini quota or rate limit reached. Try again later or check your plan.");
-    if (status === 400 && /API key/i.test(msg)) return fail(503, "bad_key", "Gemini rejected the API key. Check GEMINI_API_KEY.");
-    if (status === 401 || status === 403) return fail(503, "bad_key", "Gemini rejected the API key or its permissions. Check GEMINI_API_KEY.");
-    if (status === 404) return fail(502, "bad_model", `Model "${MODEL}" is not available. Set GEMINI_MODEL to a supported model.`);
+    if (status === 429 || /quota|RESOURCE_EXHAUSTED/i.test(msg)) return fail(429, "quota", "The server is busy right now. Please try again later.");
+    if (status === 400 && /API key/i.test(msg)) return fail(503, "bad_key", "The server can't process translations right now. Please try again later.");
+    if (status === 401 || status === 403) return fail(503, "bad_key", "The server can't process translations right now. Please try again later.");
+    if (status === 404) return fail(502, "bad_model", "The server can't process translations right now. Please try again later.");
     console.error("Gemini error:", status); // status only; never log user text
-    return fail(502, "network", "Could not reach Gemini. Check your connection and retry.");
+    return fail(502, "network", "Could not reach the server. Check your connection and retry.");
   }
 });
 
