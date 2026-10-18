@@ -97,7 +97,7 @@ app.get("/api/health", (_req, res) => res.json({ configured: Boolean(ai), model:
 
 app.post("/api/translate", async (req, res) => {
   const fail = (status, code, message) => res.status(status).json({ error: { code, message } });
-  if (!ai) return fail(503, "missing_key", "GEMINI_API_KEY is not set on the server. Add it to your environment and restart.");
+  if (!ai) return fail(503, "missing_key", "Translation is unavailable right now. The server isn't set up yet.");
   const { text, source = "auto", dialect, tone = "casual", explainIn = "same" } = req.body || {};
   if (typeof text !== "string" || !text.trim()) return fail(400, "invalid_input", "Enter some text to translate.");
   if (text.length > MAX_CHARS) return fail(400, "invalid_input", `Text is too long. Limit is ${MAX_CHARS} characters.`);
@@ -118,16 +118,16 @@ app.post("/api/translate", async (req, res) => {
     let parsed;
     try { parsed = JSON.parse(response.text); } catch { parsed = null; }
     const clean = validateOutput(parsed);
-    if (!clean) return fail(502, "invalid_response", "The model returned an incomplete answer. Please try again.");
+    if (!clean) return fail(502, "invalid_response", "The server returned an incomplete answer. Please try again.");
     res.json({ ...clean, target_dialect: DIALECTS[dialect].label, tone });
   } catch (err) {
     const status = err?.status || err?.code;
+    console.error("Translate error:", status); // status only; never log user text
     const msg = String(err?.message || "");
     if (status === 429 || /quota|RESOURCE_EXHAUSTED/i.test(msg)) return fail(429, "quota", "The server is busy right now. Please try again later.");
     if (status === 400 && /API key/i.test(msg)) return fail(503, "bad_key", "The server can't process translations right now. Please try again later.");
     if (status === 401 || status === 403) return fail(503, "bad_key", "The server can't process translations right now. Please try again later.");
     if (status === 404) return fail(502, "bad_model", "The server can't process translations right now. Please try again later.");
-    console.error("Gemini error:", status); // status only; never log user text
     return fail(502, "network", "Could not reach the server. Check your connection and retry.");
   }
 });
