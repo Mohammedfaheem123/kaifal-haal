@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark">
 <script>try{var t=localStorage.getItem("kh_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Kaifal Haal — Speak Their Language.</title>
-<meta name="description" content="Kaifal Haal is an AI powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
+<meta name="description" content="Kaifal Haal.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600&family=Noto+Sans+Malayalam:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -64,7 +64,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
 <body>
 <div class="wrap">
   <header><h1>Kaifal Haal</h1><span class="ar-brand" lang="ar" dir="rtl">كيف الحال؟</span><button class="s" id="theme" type="button" style="margin-left:auto">Dark mode</button></header>
-  <p class="tag">Speak Their Language.</p>
+  <p class="tag">Speak with ease.</p>
   <div id="setup" class="msg err" hidden></div>
   <nav role="tablist">
     <button role="tab" data-tab="translate" aria-selected="true">Translate</button>
@@ -99,7 +99,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
 
   <section id="tab-phrasebook" hidden>
     <div class="card">
-      <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are not reviewed by native speakers</b>.</p>
+      <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are not reviewed by native speakers.</p>
       <div class="grid">
         <div><label class="f" for="pbDialect">Dialect</label><select id="pbDialect"></select></div>
         <div><label class="f" for="pbCat">Category</label><select id="pbCat"></select></div>
@@ -285,7 +285,7 @@ function renderPhrases() {
   if (!rows.length) { $("pbList").replaceChildren(el("div", { class: "empty" }, "No phrases match your search.")); return; }
   $("pbList").replaceChildren(...rows.map(([c, p]) => {
     const key = d + "|" + p, g = generated[key];
-    const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" },), el("div", { class: "meaning" }, p));
+    const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("div", { class: "meaning" }, p));
     if (g) {
       item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"));
       g.variants.forEach((v) => {
@@ -296,9 +296,9 @@ function renderPhrases() {
       });
       if (g.notes) item.append(el("div", { class: "note" }, g.notes));
     } else {
-      const b = el("button", { class: "s", type: "button" }, "Show in " + DIALECTS[d].slice(3));
+      const b = el("button", { class: "s", type: "button" }, "Show in " + DIALECTS[d]);
       b.onclick = async () => {
-        b.disabled = true; b.textContent = "Generating…";
+        b.disabled = true; b.textContent = "Generating...";
         try {
           const r = await translate({ text: p, source: "english", dialect: d, tone: "casual", explainIn: "english" });
           generated[key] = { variants: r.variants, notes: r.context_notes }; renderPhrases();
