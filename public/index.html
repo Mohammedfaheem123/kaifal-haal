@@ -115,12 +115,12 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
     <div class="card" style="margin-top:14px"><div class="row" style="margin-top:0"><h2 style="margin:0">History</h2><span class="sp"></span><button class="s" id="clearHist" type="button">Clear history</button></div><div id="histList"></div></div>
   </section>
 
-  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations may be imperfect.</p>
+  <p class="foot">History and favorites are stored only on this device. Clearing site data or switching devices removes them. Translations and English pronunciations may be imperfect.</p>
 </div>
 
 <script>
 const $ = (id) => document.getElementById(id);
-const DIALECTS = { saudi: "🇸🇦 Saudi Arabic", emirati: "🇦🇪 Emirati Arabic", kuwaiti: "🇰🇼 Kuwaiti Arabic", qatari: "🇶🇦 Qatari Arabic" };
+const DIALECTS = { saudi: "Saudi Arabic", emirati: "Emirati Arabic", kuwaiti: "Kuwaiti Arabic", qatari: "Qatari Arabic" };
 const MAX = 500;
 const PHRASES = {
   "Greetings and introductions": ["How are you?", "Nice to meet you.", "My name is ___ and I am from Kerala.", "Good morning."],
@@ -285,7 +285,7 @@ function renderPhrases() {
   if (!rows.length) { $("pbList").replaceChildren(el("div", { class: "empty" }, "No phrases match your search.")); return; }
   $("pbList").replaceChildren(...rows.map(([c, p]) => {
     const key = d + "|" + p, g = generated[key];
-    const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" }, "Sample phrase"), el("div", { class: "meaning" }, p));
+    const item = el("div", { class: "item" }, el("span", { class: "pill" }, c), el("span", { class: "pill" },), el("div", { class: "meaning" }, p));
     if (g) {
       item.append(el("span", { class: "pill ai" }, "AI-generated · not native-reviewed"));
       g.variants.forEach((v) => {
