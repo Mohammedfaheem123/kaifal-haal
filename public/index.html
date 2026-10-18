@@ -6,7 +6,7 @@
 <meta name="color-scheme" content="light dark">
 <script>try{var t=localStorage.getItem("kh_theme")||(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");document.documentElement.dataset.theme=t}catch(e){}</script>
 <title>Kaifal Haal — Speak Their Language.</title>
-<meta name="description" content="Kaifal Haal is an AI-powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
+<meta name="description" content="Kaifal Haal is an AI powered Arabic dialect translator for English, Malayalam and Manglish speakers.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700&family=Noto+Naskh+Arabic:wght@500;600&family=Noto+Sans+Malayalam:wght@400;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
@@ -69,7 +69,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
   <nav role="tablist">
     <button role="tab" data-tab="translate" aria-selected="true">Translate</button>
     <button role="tab" data-tab="phrasebook" aria-selected="false">Phrasebook</button>
-    <button role="tab" data-tab="saved" aria-selected="false">Saved</button>
+    <button role="tab" data-tab="saved" aria-selected="false">Saved Phrases</button>
   </nav>
 
   <section id="tab-translate" class="card">
@@ -77,7 +77,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
       <div><label class="f" for="source">From</label>
         <select id="source"><option value="auto">Auto detect</option><option value="english">English</option><option value="malayalam">Malayalam (മലയാളം)</option><option value="manglish">Manglish</option></select></div>
       <div><label class="f" for="dialect">To</label>
-        <select id="dialect"><option value="saudi">🇸🇦 Saudi Arabic</option><option value="emirati">🇦🇪 Emirati Arabic</option><option value="kuwaiti">🇰🇼 Kuwaiti Arabic</option><option value="qatari">🇶🇦 Qatari Arabic</option></select></div>
+        <select id="dialect"><option value="saudi">Saudi Arabic</option><option value="emirati">Emirati Arabic</option><option value="kuwaiti">Kuwaiti Arabic</option><option value="qatari">Qatari Arabic</option></select></div>
     </div>
     <div class="grid opts">
       <div><label class="f" for="tone">Tone</label>
@@ -99,7 +99,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
 
   <section id="tab-phrasebook" hidden>
     <div class="card">
-      <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are produced live by Gemini and are <b>not reviewed by native speakers</b>.</p>
+      <p style="margin-top:0">Pick a phrase, then generate it in your chosen dialect. Results are not reviewed by native speakers</b>.</p>
       <div class="grid">
         <div><label class="f" for="pbDialect">Dialect</label><select id="pbDialect"></select></div>
         <div><label class="f" for="pbCat">Category</label><select id="pbCat"></select></div>
@@ -115,7 +115,7 @@ h2{font:700 19px "Bricolage Grotesque",sans-serif;margin:18px 0 8px}
     <div class="card" style="margin-top:14px"><div class="row" style="margin-top:0"><h2 style="margin:0">History</h2><span class="sp"></span><button class="s" id="clearHist" type="button">Clear history</button></div><div id="histList"></div></div>
   </section>
 
-  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations are AI-generated and may be imperfect. Listen uses your device's Arabic voice, which usually speaks standard Arabic rather than the local accent.</p>
+  <p class="foot">History and favorites are stored only in this browser on this device (local storage). Clearing site data or switching devices removes them. Translations and English pronunciations may be imperfect.</p>
 </div>
 
 <script>
